@@ -48,5 +48,18 @@ def replace_letter(i):
     return html.escape(i)
 
 
+def random_word_from_queries_list():
+    # We assume that the list is short enough
+    with open("QueriesList", "r") as f:
+        x = f.read()
+    x = x.splitlines()
+    return x[random.randint(0, len(x) - 1)]
+
+
+def random_query():
+    return parse_query(random_word_from_queries_list())
+
+
 if __name__ == '__main__':
-    print(parse_query(""))
+    for i in range(20):
+        print(random_query())
