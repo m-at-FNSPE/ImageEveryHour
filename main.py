@@ -3,6 +3,7 @@ import json
 import random
 import urllib.request as request
 import html
+from functools import wraps
 
 
 # API keys dictionary names
@@ -30,6 +31,22 @@ def api_keys():
         exit()
 
 
+def log(func):
+    if not hasattr(log, "times_called_this_run"):
+        log.times_called_this_run = 0
+
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        with open("log.txt", "a") as f:
+            # Assumption that the script is run with cron, otherwise we have to implement reset of this variable
+            if log.times_called_this_run == 0:
+                f.write("\n" + datetime.datetime.now().strftime("%m/%d/%Y, %H:%M") + "\n")
+            f.write("Being written to from " + func.__name__ + " function\n")
+            f.write("te" + "\n")
+            f.write(str(result) + "\n")
+            log.times_called_this_run += 1
+        return result
+    return wrapper
 
 
 def get_url_for_google_search(query: str, offset: int = 0):
@@ -74,9 +91,12 @@ def random_word_from_queries_list():
     return x[random.randint(0, len(x) - 1)]
 
 
+@log
 def random_query():
     return parse_query(random_word_from_queries_list())
 
 
 if __name__ == '__main__':
+    random_query()
+    random_query()
     random_query()
