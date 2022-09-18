@@ -1,23 +1,41 @@
+import datetime
 import json
 import random
 import urllib.request as request
 import html
 
 
+# API keys dictionary names
+google_api_key = "google_API_key"
+google_cx_key = "google_cx_key"
+
 test_image_1_url = "https://images.squarespace-cdn.com/content/v1/560c3567e4b03e0837f47270/1493669481606-9EGYMM9PVBLNNTFAZUJ9/IMG_3541.JPG?format=1500w"
 test_image_2_url = "http://static1.squarespace.com/static/597e7c7d893fc0db64795f0d/6162e23b8ad294334b6994c0/62d0bc41f71f7410e8559e0d/1657846856920/IMG_3541.JPG?format=1500w"
 
 
 def api_keys():
-    with open("env.json", "r") as file:
-        json_file = file.read()
-    return json.loads(json_file)
+    try:
+        with open("env.json", "r") as file:
+            json_file = file.read()
+        return json.loads(json_file)
+    except FileNotFoundError:
+        with open("env.json", "w") as file:
+            x = {
+                google_api_key: "YOUR_GOOGLE_API_KEY_HERE",
+                google_cx_key: "YOUR_GOOGLE_CUSTOM_SEARCH_ENGINE_HERE"
+
+            }
+            json.dump(x, file, indent=2)
+            print("File env.json not found, made one, insert your API keys.")
+        exit()
+
+
 
 
 def get_url_for_google_search(query: str, offset: int = 0):
     url_start = "https://customsearch.googleapis.com/customsearch/v1?"
-    key = "key=" + str(api_keys()["google_API_key"])
-    cx = "cx=" + str(api_keys()["cx"])
+    key = "key=" + str(api_keys()[google_api_key])
+    cx = "cx=" + str(api_keys()[google_cx_key])
     q = "q=" + query
     start = "offset=" + str(offset)
 
@@ -61,5 +79,4 @@ def random_query():
 
 
 if __name__ == '__main__':
-    for i in range(20):
-        print(random_query())
+    random_query()
